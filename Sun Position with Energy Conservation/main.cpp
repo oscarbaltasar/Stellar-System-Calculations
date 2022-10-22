@@ -1,128 +1,102 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <string>
-#include <string_view>
-#include <iostream>
-#include <stdio.h>
-#include <math.h> 
-#include <time.h>
-#include <chrono>
-#include <iomanip>
-#include <format>
-#include <thread>
-
-#define PI 3.14159265358979323846
-
-#define EarthPeriod 365.256
-#define SecondsinDay 86400
-#define EarthInclination 23.44
-
-#define SuntoEarthDistance 149.600																				//imprecisión orbita circular
-#define Power_SuntoEarthDistance 6				//Millones de kilometros
-#define EarthRadius 6.378																					
-#define Power_EarthRadius 3						//Miles de kilometros
-
-#define Longitude -4.064501728800064
-#define Latitude 40.71010524106721
-//#define Longitude 0
-//#define Latitude 0
-#define Height 1091								
-#define Power_Height -3							//Unidades de kilometros
-
+#include "CommonData.h"
+#include "Planet.h"
 
 
 int main(int argc, char** argv);
 
 
 int main(int argc, char** argv) {
+	GlobalData system_Data;
 	int i = 0;
 	int totalMiliseconds;
 	while (true) {
 		auto start = std::chrono::high_resolution_clock::now();
+		system_Data.updateTime();
 
-		time_t rawtime;
-		struct tm* info = new struct tm();
-		time(&rawtime);
-		gmtime_s(info, &rawtime);
-		long double currentDay = info->tm_yday + 1;
+		struct tm* realTime = system_Data.realTime;
+		long double earth_Day = realTime->tm_yday + 1;
+
+		Planet earth = Planet();
 		
-		long double currentSeconds = ((info->tm_hour) * 3600.0 + info->tm_min * 60.0 + info->tm_sec);
+		long double earth_T_Seconds = ((realTime->tm_hour) * 3600.0 + realTime->tm_min * 60.0 + realTime->tm_sec);
 		//long double currentSeconds = (12 * 3600.0 + 28 * 60.0 + i);
-		int hora = (int)(currentSeconds / 3600);
-		int minutos = (int)(((currentSeconds / 3600) - hora) * 60);
-		int segundos = round(((((currentSeconds / 3600) - hora) * 60) - minutos) * 60);
-		printf("La hora es: %d:%d:%d\n", hora, minutos, segundos);
-		printf("- Dias hasta hoy: %Lf\n", currentDay);
+		int earth_Hour = (int)(earth_T_Seconds / 3600);
+		int earth_Minutes = (int)(((earth_T_Seconds / 3600) - earth_Hour) * 60);
+		int earth_Seconds = round(((((earth_T_Seconds / 3600) - earth_Hour) * 60) - earth_Minutes) * 60);
+		printf("La hora es: %d:%d:%d\n", earth_Hour, earth_Minutes, earth_Seconds);
+		printf("- Dias hasta hoy: %Lf\n", earth_Day);
 		//long double anyoBisiesto = (info->tm_year % 4);
 		//anyoBisiesto = anyoBisiesto / 4;
 
 
-		long double currentPercentage = (currentDay-1 + (currentSeconds / SecondsinDay)) / EarthPeriod;
+		long double year_Percentage = (earth_Day-1 + (earth_T_Seconds / SecondsinDay)) / EarthPeriod;
 		//anyoBisiesto = anyoBisiesto + currentPercentage / 4;
 		//currentPercentage = currentPercentage + anyoBisiesto / EarthPeriod;
-		currentSeconds = currentSeconds + (currentPercentage * 24 * 3600);
+		//Desfase del año
+		earth_T_Seconds = earth_T_Seconds + (year_Percentage * 24 * 3600);
 		
 
 		//printf("- Porcentage de Bisiesto: %Lf\n", anyoBisiesto);
-		long double currentRadians = currentPercentage * 2 * PI;
+		long double year_PercentageRadians = year_Percentage * 2 * PI;
 		//long double currentRadians = 0;
-		long double earth_X;
-		long double earth_Y;
-		printf("- Porcentage de la longitud: %Lf\n", currentPercentage);
-		if (currentPercentage < 0.25) {
+		long double planet_X;
+		long double planet_Y;
+		printf("- Porcentage de la longitud: %Lf\n", year_Percentage);
+		if (year_Percentage < 0.25) {
 			printf("   Primer Cuadrante\n");
-			earth_X = cos(currentRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
-			earth_Y = sin(currentRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
+			planet_X = cos(year_PercentageRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
+			planet_Y = sin(year_PercentageRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
 		}
-		else if (currentPercentage < 0.5) {
+		else if (year_Percentage < 0.5) {
 			printf("   Segundo Cuadrante\n");
-			earth_X = -cos(currentRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
-			earth_Y = sin(currentRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
+			planet_X = -cos(year_PercentageRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
+			planet_Y = sin(year_PercentageRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
 		}
-		else if (currentPercentage < 0.75) {
+		else if (year_Percentage < 0.75) {
 			printf("   Tercer Cuadrante\n");
-			earth_X = -cos(currentRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
-			earth_Y = -sin(currentRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
+			planet_X = -cos(year_PercentageRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
+			planet_Y = -sin(year_PercentageRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
 		}
 		else {
 			printf("   Cuarto Cuadrante\n");
-			earth_X = cos(currentRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
-			earth_Y = -sin(currentRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
+			planet_X = cos(year_PercentageRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
+			planet_Y = -sin(year_PercentageRadians) * (SuntoEarthDistance * pow(10, Power_SuntoEarthDistance));
 		}
 
-		long double earth_Z = 0;
+		long double planet_Z = 0;
 
-		long double earthRadiusinMeters = EarthRadius * pow(10, Power_EarthRadius) + (Height * pow(10, Power_Height));
+		long double planet_RadiusMeters = EarthRadius * pow(10, Power_EarthRadius) + (Height * pow(10, Power_Height));
 
-		long double userLongidute = 0;
-		if (currentSeconds <= SecondsinDay / 2) {
-			userLongidute = Longitude + (currentSeconds / SecondsinDay) * 360;
+		long double user_Longidute = 0;
+		if (earth_T_Seconds <= SecondsinDay / 2) {
+			user_Longidute = Longitude + (earth_T_Seconds / SecondsinDay) * 360;
 		}
 		else {
-			userLongidute = Longitude - (360 - (currentSeconds / SecondsinDay) * 360);
+			user_Longidute = Longitude - (360 - (earth_T_Seconds / SecondsinDay) * 360);
 		}
 		//Ignorando altitud
-		long double userLatitude = Latitude;
+		long double user_Latitude = Latitude;
 		//userLatitude = userLatitude - EarthInclination * cos(userLongidute * (PI / 180));			//Intentado calcular angulo de la tierra
-		userLatitude = 90 - userLatitude;
-		userLatitude = userLatitude + EarthInclination * sin((PI / 360) * (currentDay - 80));
+		user_Latitude = 90 - user_Latitude;
+		user_Latitude = user_Latitude + EarthInclination * sin((PI / 360) * (earth_Day - 80));
 		printf("- Longitud Virtual:\t%Lf,\t Latitud Virtual:\t%Lf\n", Longitude, Latitude);
-		printf("- Longitud Real:\t%Lf,\t Latitud Real:  \t%Lf\n", userLongidute, userLatitude);
-		long double user_X = earthRadiusinMeters * sin(userLatitude * (PI / 180)) * cos(userLongidute * (PI / 180));
-		long double user_Y = earthRadiusinMeters * sin(userLatitude * (PI / 180)) * sin(userLongidute * (PI / 180));
-		long double user_Z = earthRadiusinMeters * cos(userLatitude * (PI / 180));
+		printf("- Longitud Real:\t%Lf,\t Latitud Real:  \t%Lf\n", user_Longidute, user_Latitude);
+		long double user_X = planet_RadiusMeters * sin(user_Latitude * (PI / 180)) * cos(user_Longidute * (PI / 180));
+		long double user_Y = planet_RadiusMeters * sin(user_Latitude * (PI / 180)) * sin(user_Longidute * (PI / 180));
+		long double user_Z = planet_RadiusMeters * cos(user_Latitude * (PI / 180));
 
-		printf("- Coordenadas Tierra:\t\t\t X = %Lf\t, Y = %Lf\t, Z = %Lf\n", earth_X, earth_Y, earth_Z);
+		printf("- Coordenadas Tierra:\t\t\t X = %Lf\t, Y = %Lf\t, Z = %Lf\n", planet_X, planet_Y, planet_Z);
 		printf("- Posicion Usuario relativa a la Tierra: X = %Lf\t, Y = %Lf\t, Z = %Lf\n", user_X, user_Y, user_Z);
 
-		user_X = user_X + earth_X;
-		user_Y = user_Y + earth_Y;
-		user_Z = user_Z + earth_Z;
+		user_X = user_X + planet_X;
+		user_Y = user_Y + planet_Y;
+		user_Z = user_Z + planet_Z;
 
 		printf("- Position Usuario real:\t\t X = %Lf\t, Y = %Lf\t, Z = %Lf\n", user_X, user_Y, user_Z);
 
-		long double horizonNormalVector_X = user_X - earth_X;
-		long double horizonNormalVector_Y = user_Y - earth_Y;
-		long double horizonNormalVector_Z = user_Z - earth_Z;
+		long double horizonNormalVector_X = user_X - planet_X;
+		long double horizonNormalVector_Y = user_Y - planet_Y;
+		long double horizonNormalVector_Z = user_Z - planet_Z;
 		long double horizonEquationEquals = -(horizonNormalVector_X * -user_X + horizonNormalVector_Y * -user_Y + horizonNormalVector_Z * -user_Z);
 		printf("- Ecuacion Plano del horizonte:\t %LfX + %LfY + %LfZ = %Lf\n", horizonNormalVector_X, horizonNormalVector_Y, horizonNormalVector_Z, horizonEquationEquals);
 

@@ -140,6 +140,14 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Planet.cpp" />
+    <ClCompile Include="CommonData.cpp" />
+    <ClCompile Include="SystemMassCenter.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="CommonData.h" />
+    <ClInclude Include="SystemMassCenter.h" />
+    <ClInclude Include="Planet.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
