@@ -1,14 +1,15 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
+#include <string.h>
 #include <string>
 #include <string_view>
 #include <iostream>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h> 
 #include <time.h>
 #include <chrono>
 #include <iomanip>
-#include <format>
 #include <thread>
 
 #define PI 3.14159265358979323846
@@ -29,14 +30,21 @@
 #define Height 1091								
 #define Power_Height -3							//Unidades de kilometros
 
-class GlobalData
+typedef struct {
+	double number;
+	int number_SciPow;
+}SciNumber;
+
+class CommonData
 {
 public:
 	
-	GlobalData();
-	~GlobalData();
+	CommonData();
+	~CommonData();
 	void updateTime();
-	static struct tm* realTime;
+	static _CHRONO_::tm* realTime;
+	static void FixSciNumber(SciNumber *number);
+	static SciNumber AddSciNumber(SciNumber a, SciNumber b);
 
 private:
 	time_t rawTime;

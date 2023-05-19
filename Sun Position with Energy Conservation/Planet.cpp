@@ -1,59 +1,84 @@
 #include "Planet.h"
-#include "CommonData.h"
 
-Planet::Planet(float timeOfYear = -1, float timeOfDay = -1, float totalDaysinYear = 365.25, float dayDuration = 24, float hourDuration = 60, float minuteDuration = 60)
+Planet::Planet(std::string name, double radiusToCenter, int radiusToCenter_SciPow, double radius, int radius_SciPow, long inclination, long period, long initialperiodPosition)
 {
-	this->dayDuration = dayDuration;
-	this->hourDuration = hourDuration;
-	this->minuteDuration = minuteDuration;
-	this->totalDaysinYear = totalDaysinYear;
-	if (timeOfDay <= -1)
-		this->timeOfDay = CoordinateDayWithEarth();
-	else
-		this->timeOfDay = timeOfDay;
-	if (timeOfYear <= -1)
-		this->timeOfYear = CoordinateYearWithEarth();
-	else
-		this->timeOfYear = timeOfYear;
-
-	timeOfDaywithLag = this->timeOfDay + this->timeOfYear;
-	timeOfYearinRadians = this->timeOfYear * 2 * PI;
-
-
+	this->name = name;
+	posX.number = radius;
+	posX.number_SciPow = radiusToCenter_SciPow;
+	CommonData::FixSciNumber(&posX);
+	posY.number = 0;
+	posY.number_SciPow = 0;
+	CommonData::FixSciNumber(&posY);
+	this->radiusToCenter.number = radiusToCenter;
+	this->radiusToCenter.number_SciPow = radiusToCenter_SciPow;
+	CommonData::FixSciNumber(&this->radiusToCenter);
+	this->radius.number = radius;
+	this->radius.number_SciPow = radius_SciPow;
+	CommonData::FixSciNumber(&this->radius);
+	this->inclination = inclination;
+	this->period = period;
+	this->initialperiodPosition = initialperiodPosition;
 }
 
-Planet::~Planet()
+void Planet::CalculateGlobalPosition(long time)
 {
+	long currentPeriodPosition = ((time + initialperiodPosition) % period) / period;
+	long periodToAngle = period * (2 * PI);
+
+	posX.number = sin(periodToAngle) * radiusToCenter.number;
+	posX.number_SciPow = radiusToCenter.number_SciPow;
+	CommonData::FixSciNumber(&posX);
+
+	posY.number = cos(periodToAngle) * radiusToCenter.number;
+	posY.number_SciPow = radiusToCenter.number_SciPow;
+	CommonData::FixSciNumber(&posY);
 }
 
-//Calculating each second, might be changed later
-long double Planet::CurrentTimeplusSeconds(float seconds)
+void Planet::CalculateSatelitesPositions(long time)
 {
-	long double planet_Time = timeOfDay * dayDuration * hourDuration * minuteDuration + seconds; //Calculate in seconds the moment of the day
-
-	//Recalculate the moment of the planet for next operations
-	float newTimeOfDay = planet_Time / (dayDuration * hourDuration * minuteDuration); 
-	timeOfDay = newTimeOfDay;
-	timeOfYear = (totalDaysinYear - 1 + timeOfDay) / EarthPeriod;
-	timeOfDaywithLag = this->timeOfDay + this->timeOfYear;
-	timeOfYearinRadians = this->timeOfYear * 2 * PI;
-	
-	return planet_Time; //return current seconds
+	if (satelites == nullptr)
+		return;
+	int numberofSatelites = sizeof(**satelites) / sizeof(Satelite);
+	for (int i = 0; i < numberofSatelites; i++) {
+		(*satelites)[i].CalculateRelativePosition(time);
+		(*satelites)[i].CalculateGlobalPosition(posX, posY);
+		std::cout << (*satelites)[i].toString();
+	}
 }
 
-
-//We calculate the moment of the day in % for the Earth and return it
-float Planet::CoordinateDayWithEarth()
+void Planet::AddSatelite(Satelite* satelite)
 {
-	struct tm* realTime = GlobalData::realTime;
-	long double timeonEarth = ((realTime->tm_hour) * 3600.0 + realTime->tm_min * 60.0 + realTime->tm_sec);
-	return timeonEarth / SecondsinDay;
+	int satelitesNumber = sizeof(*satelites) / sizeof(Satelite*) + 1;
+	if (satelites == nullptr) satelitesNumber = 1;
+	Satelite** buffer;
+	buffer = (Satelite**)malloc(satelitesNumber*sizeof(Satelite*));
+	if (satelites != nullptr) {
+		for (int i = 0; i < satelitesNumber - 1; i++) {
+			buffer[i] = satelites[i];
+		}
+		free(satelites);
+	}
+	buffer[satelitesNumber - 1] = satelite;
+	std::cout << buffer[0]->toString();
+	satelites = buffer;
+	std::cout << satelites[0]->toString();
 }
 
-
-//We calculate the moment of the year in % for the Earth and return it
-float Planet::CoordinateYearWithEarth()
+std::string Planet::toString()
 {
-	float year_Percentage = (totalDaysinYear - 1 + timeOfDay) / EarthPeriod;
-	return year_Percentage;
+	std::string res = "Name:\t" + name + "\n";
+	res += "Position:\t" + std::to_string(posX.number) + "*10^" + std::to_string(posX.number_SciPow) + "\t" + std::to_string(posY.number) + "*10^" + std::to_string(posY.number_SciPow) + "\n";
+	res += "Radius:\t" + std::to_string(radius.number) + "*10^" + std::to_string(radius.number_SciPow) + "\n";
+	res += "Orbit Radius:\t" + std::to_string(radiusToCenter.number) + "*10^" + std::to_string(radiusToCenter.number_SciPow) + "\n";
+	return res;
+}
+
+SciNumber Planet::getPosX()
+{
+	return posX;
+}
+
+SciNumber Planet::getPosY()
+{
+	return posY;
 }

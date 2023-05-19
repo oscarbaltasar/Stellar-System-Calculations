@@ -1,12 +1,26 @@
 #include "CommonData.h"
 #include "Planet.h"
 
-
-int main(int argc, char** argv);
+#include "SystemSimulation.h"
 
 
 int main(int argc, char** argv) {
-	GlobalData system_Data;
+	std::cout << "Iniciando valores\n";
+	User user = User(-4.064501728800064, 40.71010524106721, 1.091);
+	Satelite* moon = new Satelite("moon",3.844, 6, 1.7374, 3, 6.68, 2358720);
+	Planet* earth = new Planet("earth",1.496, 8, 6.378, 3, 23.44, 31558118.4);
+	earth->AddSatelite(moon);
+	SystemCenter sun = SystemCenter(0, 0);
+	SystemSimulation systemSimulation(earth,&sun,&user);
+
+	std::cout << "Iniciando simulacion\n";
+	systemSimulation.run();
+}
+
+
+/*
+int main(int argc, char** argv) {
+	CommonData system_Data;
 	int i = 0;
 	int totalMiliseconds;
 	while (true) {
@@ -112,5 +126,5 @@ int main(int argc, char** argv) {
 		
 		printf("\n");
 		std::this_thread::sleep_until(std::chrono::system_clock::now() + std::chrono::milliseconds(1000-duration.count()));
-	}
 }
+*/
