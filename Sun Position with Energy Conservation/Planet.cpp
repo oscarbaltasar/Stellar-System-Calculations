@@ -1,6 +1,6 @@
 #include "Planet.h"
 
-Planet::Planet(std::string name, double radiusToCenter, int radiusToCenter_SciPow, double radius, int radius_SciPow, long inclination, long period, long initialperiodPosition)
+Planet::Planet(std::string name, double radiusToCenter, int radiusToCenter_SciPow, double radius, int radius_SciPow, long inclination, long period, long upperSolstice, long initialperiodPosition)
 {
 	this->name = name;
 	posX.number = radius;
@@ -16,6 +16,7 @@ Planet::Planet(std::string name, double radiusToCenter, int radiusToCenter_SciPo
 	this->radius.number_SciPow = radius_SciPow;
 	CommonData::FixSciNumber(&this->radius);
 	this->inclination = inclination;
+	this->upperSolstice = upperSolstice;
 	this->period = period;
 	this->initialperiodPosition = initialperiodPosition;
 }
@@ -81,4 +82,9 @@ SciNumber Planet::getPosX()
 SciNumber Planet::getPosY()
 {
 	return posY;
+}
+
+SciNumber Planet::getRadius()
+{
+	return radius;
 }

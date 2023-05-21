@@ -11,6 +11,11 @@
 #include <chrono>
 #include <iomanip>
 #include <thread>
+#ifdef _WIN32
+#include <Windows.h>
+#else
+#include <unistd.h>
+#endif
 
 #define PI 3.14159265358979323846
 
@@ -42,7 +47,7 @@ public:
 	CommonData();
 	~CommonData();
 	void updateTime();
-	static _CHRONO_::tm* realTime;
+	static inline tm* realTime;
 	static void FixSciNumber(SciNumber *number);
 	static SciNumber AddSciNumber(SciNumber a, SciNumber b);
 

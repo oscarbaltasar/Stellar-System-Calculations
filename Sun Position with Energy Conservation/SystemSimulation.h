@@ -14,7 +14,7 @@ private:
 	User* user;
 
 	time_t rawTime;
-	static std::tm* realTime;
+	static inline tm* realTime;
 
 	void UpdateRealTime();
 

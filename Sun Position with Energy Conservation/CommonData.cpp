@@ -2,7 +2,7 @@
 
 CommonData::CommonData()
 {
-	//realTime = new _CHRONO_::tm();
+	realTime = new tm();
 }
 
 CommonData::~CommonData()
@@ -11,8 +11,8 @@ CommonData::~CommonData()
 
 void CommonData::updateTime()
 {
-	time(&rawTime);
-	//gmtime_s(realTime, &rawTime);
+	//time(&rawTime);
+	gmtime_s(realTime, &rawTime);
 }
 
 void CommonData::FixSciNumber(SciNumber *number)

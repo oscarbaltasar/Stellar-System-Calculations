@@ -1,6 +1,6 @@
 #include "Satelite.h"
 
-Satelite::Satelite(std::string name, double radiusToCenter, int radiusToCenter_SciPow, double radius, int radius_SciPow, long inclination, long period, long initialperiodPosition)
+Satelite::Satelite(std::string name, double radiusToCenter, int radiusToCenter_SciPow, double radius, int radius_SciPow, long inclination, long period, long upperSolstice, long initialperiodPosition)
 {
 	this->name = name;
 	posXrelative.number = radius;
@@ -16,6 +16,7 @@ Satelite::Satelite(std::string name, double radiusToCenter, int radiusToCenter_S
 	this->radius.number_SciPow = radius_SciPow;
 	CommonData::FixSciNumber(&this->radius);
 	this->inclination = inclination;
+	this->upperSolstice = upperSolstice;
 	this->period = period;
 	this->initialperiodPosition = initialperiodPosition;
 }
@@ -48,4 +49,9 @@ std::string Satelite::toString()
 	res += "Radius:\t" + std::to_string(radius.number) + "*10^" + std::to_string(radius.number_SciPow) + "\n";
 	res += "Orbit Radius:\t" + std::to_string(radiusToCenter.number) + "*10^" + std::to_string(radiusToCenter.number_SciPow) + "\n";
 	return res;
+}
+
+SciNumber Satelite::getRadius()
+{
+	return radius;
 }

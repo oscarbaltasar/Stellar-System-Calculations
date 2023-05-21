@@ -1,12 +1,17 @@
 #pragma once
+#include "Planet.h"
 
 class User {
 private:
-	double posX, posY;
+	Planet* planet = nullptr;
+	SciNumber posXrelative, posYrelative, posZrelative;
+	SciNumber posX, posY, posZ;
 	double longitude, latitude;
-	long height;
+	SciNumber height;
 
 public:
-	User(double longitude, double latitude, long height);
-	void setPosition(double posX, double posY);
+	User(double longitude, double latitude, double height, Planet* planet);
+	void calculateRelativePosition();
+	void CalculateGlobalPosition();
+	std::string toString();
 };
