@@ -21,6 +21,7 @@ User::User(double longitude, double latitude, double height, Planet* planet)
 	this->planet = planet;
 }
 
+//TODO: tener en cuenta la rotación de los planetas
 void User::calculateRelativePosition()
 {
 

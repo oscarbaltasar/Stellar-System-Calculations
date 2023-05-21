@@ -21,6 +21,7 @@ Planet::Planet(std::string name, double radiusToCenter, int radiusToCenter_SciPo
 	this->initialperiodPosition = initialperiodPosition;
 }
 
+//TODO: tener en cuenta cuando pasa un año para que no se acaben las orbitas preventivamente 
 void Planet::CalculateGlobalPosition(long time)
 {
 	long currentPeriodPosition = ((time + initialperiodPosition) % period) / period;

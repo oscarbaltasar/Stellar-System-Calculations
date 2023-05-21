@@ -3,7 +3,9 @@
 #include "CommonData.h"
 
 
-//TODO: Añadir inclinación para el eje Z de los planetas
+//TODO: Añadir inclinación para el eje Z
+//TODO: Añadir rotación alrededor de su eje
+//TODO: Añadir inclunación de su propio eje por solsticio
 class Planet
 {
 private:
