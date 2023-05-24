@@ -65,7 +65,7 @@ SciNumber CommonData::AddSciNumber(SciNumber a, SciNumber b)
 	return res;
 }
 
-void CommonData::CalculatePositionOnSphere(long latitude, long longitude, SciNumber *sphereRadius, bool latitudeHemisphere, int longitudeQuadrant, SciNumber* posX, SciNumber* posY, SciNumber* posZ)
+void CommonData::CalculatePositionOnSphere(float latitude, float longitude, SciNumber *sphereRadius, bool latitudeHemisphere, int longitudeQuadrant, SciNumber* posX, SciNumber* posY, SciNumber* posZ)
 {
 	//Calculate positions as if in quadrant 0, upper hemisphere
 	posX->number = sphereRadius->number * sin(latitude * (PI / 180)) * cos(longitude * (PI / 180));

@@ -1,6 +1,6 @@
 #include "Planet.h"
 
-Planet::Planet(std::string name, double radiusToCenter, int radiusToCenter_SciPow, double radius, int radius_SciPow, long orbitInclination, long axisInclination, long period, long axisPeriod, long orbitInclinationNodePosition, long upperSolstice, long initialperiodPosition)
+Planet::Planet(std::string name, double radiusToCenter, int radiusToCenter_SciPow, double radius, int radius_SciPow, float orbitInclination, float axisInclination, float period, float axisPeriod, float orbitInclinationNodePosition, float upperSolstice, float initialperiodPosition)
 {
 	this->name = name;
 	posX.number = radius;
@@ -25,18 +25,18 @@ Planet::Planet(std::string name, double radiusToCenter, int radiusToCenter_SciPo
 
 //TODO: tener en cuenta cuando pasa un año para que no se acaben las orbitas preventivamente 
 //TODO: Calcular posición en Z por rotación de orbita
-void Planet::CalculateGlobalPosition(long time)
+void Planet::CalculateGlobalPosition(float time)
 {
-	long currentPeriodPosition = ((time + initialperiodPosition) % orbitPeriod) / orbitPeriod;
-	long periodToAngle = currentPeriodPosition * (2 * PI);
-	std::cout << std::to_string(time)+" / "+ std::to_string(orbitPeriod) + " = " + std::to_string((long)(time / orbitPeriod)) + "\n";
+	//TODO: arreglar truncamiento int
+	float currentPeriodPosition = ((int)(time + initialperiodPosition) % (int)orbitPeriod) / orbitPeriod;
+	float periodToAngle = currentPeriodPosition * (2 * PI);
 	if (orbitInclination == 0) { //If no inclination, calculate as simple circle
 
-		posX.number = sin(periodToAngle) * radiusToCenter.number;
+		posX.number = cos(periodToAngle) * radiusToCenter.number;
 		posX.number_SciPow = radiusToCenter.number_SciPow;
 		CommonData::FixSciNumber(&posX);
 
-		posY.number = cos(periodToAngle) * radiusToCenter.number;
+		posY.number = sin(periodToAngle) * radiusToCenter.number;
 		posY.number_SciPow = radiusToCenter.number_SciPow;
 		CommonData::FixSciNumber(&posY);
 	}
@@ -71,7 +71,7 @@ void Planet::CalculateGlobalPosition(long time)
 	}
 }
 
-void Planet::CalculateSatelitesPositions(long time)
+void Planet::CalculateSatelitesPositions(float time)
 {
 	if (satelites == nullptr)
 		return;

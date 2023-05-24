@@ -1,6 +1,6 @@
 #include "User.h"
 
-User::User(long longitude, long latitude, double height, Planet* planet)
+User::User(float longitude, float latitude, double height, Planet* planet)
 {
 	posXrelative.number = 0;
 	posXrelative.number_SciPow = 0;
@@ -26,8 +26,8 @@ void User::calculateRelativePosition()
 {
 
 	SciNumber sphereRadius = CommonData::AddSciNumber(height, planet->getRadius());
-	long sphereLatitude = latitude;
-	long sphereLongitude = longitude;
+	float sphereLatitude = latitude;
+	float sphereLongitude = longitude;
 
 	//Calculate in which hemisphere the user is and it's latitude
 	bool userIsInUpperHemisphere = true;

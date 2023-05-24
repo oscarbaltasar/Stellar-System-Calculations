@@ -50,7 +50,7 @@ public:
 	static inline tm* realTime;
 	static void FixSciNumber(SciNumber *number);
 	static SciNumber AddSciNumber(SciNumber a, SciNumber b);
-	static void CalculatePositionOnSphere(long latitude, long longitude, SciNumber *sphereRadius, bool latitudeHemisphere, int longitudeQuadrant, SciNumber *posX, SciNumber *posY, SciNumber *posZ);	//Given latitude and longitude calculate positions
+	static void CalculatePositionOnSphere(float latitude, float longitude, SciNumber *sphereRadius, bool latitudeHemisphere, int longitudeQuadrant, SciNumber *posX, SciNumber *posY, SciNumber *posZ);	//Given latitude and longitude calculate positions
 
 private:
 	time_t rawTime;
