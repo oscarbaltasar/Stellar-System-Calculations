@@ -1,6 +1,6 @@
 #include "Satelite.h"
 
-Satelite::Satelite(std::string name, double radiusToCenter, int radiusToCenter_SciPow, double radius, int radius_SciPow, long inclination, long period, long upperSolstice, long initialperiodPosition)
+Satelite::Satelite(std::string name, double radiusToCenter, int radiusToCenter_SciPow, double radius, int radius_SciPow, long orbitInclination, long axisInclination, long orbitPeriod, long axisPeriod, long orbitInclinationNodePosition, long upperSolstice, long initialperiodPosition)
 {
 	this->name = name;
 	posXrelative.number = radius;
@@ -15,16 +15,19 @@ Satelite::Satelite(std::string name, double radiusToCenter, int radiusToCenter_S
 	this->radius.number = radius;
 	this->radius.number_SciPow = radius_SciPow;
 	CommonData::FixSciNumber(&this->radius);
-	this->inclination = inclination;
+	this->orbitInclination = orbitInclination;
+	this->axisInclination = axisInclination;
 	this->upperSolstice = upperSolstice;
-	this->period = period;
+	this->orbitPeriod = orbitPeriod;
+	this->axisPeriod = axisPeriod;
+	this->orbitInclinationNodePosition = orbitInclinationNodePosition;
 	this->initialperiodPosition = initialperiodPosition;
 }
 
 void Satelite::CalculateRelativePosition(long time)
 {
-	long currentPeriodPosition = ((time + initialperiodPosition) % period) / period;
-	long periodToAngle = period * (2 * PI);
+	long currentPeriodPosition = ((time + initialperiodPosition) % orbitPeriod) / orbitPeriod;
+	long periodToAngle = currentPeriodPosition * (2 * PI);
 
 	posXrelative.number = sin(periodToAngle) * radiusToCenter.number;
 	posXrelative.number_SciPow = radiusToCenter.number_SciPow;

@@ -1,6 +1,6 @@
 #include "Planet.h"
 
-Planet::Planet(std::string name, double radiusToCenter, int radiusToCenter_SciPow, double radius, int radius_SciPow, long inclination, long period, long upperSolstice, long initialperiodPosition)
+Planet::Planet(std::string name, double radiusToCenter, int radiusToCenter_SciPow, double radius, int radius_SciPow, long orbitInclination, long axisInclination, long period, long axisPeriod, long orbitInclinationNodePosition, long upperSolstice, long initialperiodPosition)
 {
 	this->name = name;
 	posX.number = radius;
@@ -15,25 +15,60 @@ Planet::Planet(std::string name, double radiusToCenter, int radiusToCenter_SciPo
 	this->radius.number = radius;
 	this->radius.number_SciPow = radius_SciPow;
 	CommonData::FixSciNumber(&this->radius);
-	this->inclination = inclination;
+	this->orbitInclination = orbitInclination;
+	this->axisInclination = axisInclination;
 	this->upperSolstice = upperSolstice;
-	this->period = period;
+	this->orbitPeriod = period;
+	this->orbitInclinationNodePosition = orbitInclinationNodePosition;
 	this->initialperiodPosition = initialperiodPosition;
 }
 
 //TODO: tener en cuenta cuando pasa un año para que no se acaben las orbitas preventivamente 
+//TODO: Calcular posición en Z por rotación de orbita
 void Planet::CalculateGlobalPosition(long time)
 {
-	long currentPeriodPosition = ((time + initialperiodPosition) % period) / period;
-	long periodToAngle = period * (2 * PI);
+	long currentPeriodPosition = ((time + initialperiodPosition) % orbitPeriod) / orbitPeriod;
+	long periodToAngle = currentPeriodPosition * (2 * PI);
+	std::cout << std::to_string(time)+" / "+ std::to_string(orbitPeriod) + " = " + std::to_string((long)(time / orbitPeriod)) + "\n";
+	if (orbitInclination == 0) { //If no inclination, calculate as simple circle
 
-	posX.number = sin(periodToAngle) * radiusToCenter.number;
-	posX.number_SciPow = radiusToCenter.number_SciPow;
-	CommonData::FixSciNumber(&posX);
+		posX.number = sin(periodToAngle) * radiusToCenter.number;
+		posX.number_SciPow = radiusToCenter.number_SciPow;
+		CommonData::FixSciNumber(&posX);
 
-	posY.number = cos(periodToAngle) * radiusToCenter.number;
-	posY.number_SciPow = radiusToCenter.number_SciPow;
-	CommonData::FixSciNumber(&posY);
+		posY.number = cos(periodToAngle) * radiusToCenter.number;
+		posY.number_SciPow = radiusToCenter.number_SciPow;
+		CommonData::FixSciNumber(&posY);
+	}
+	else {						//If inclinated, calculate as an ellipse and a line
+		//TODO: asuming inclination nodes are: 0 and it's oposite
+		
+		//if we cast the orbit to the plane XY we obtain an ellipse
+		//BiggerSphere
+		posX.number = cos(periodToAngle) * radiusToCenter.number;
+		posX.number_SciPow = radiusToCenter.number_SciPow;
+		CommonData::FixSciNumber(&posX);
+		//SmallerSphere
+		SciNumber smallSphereRadius;
+		smallSphereRadius.number = cos(orbitInclination * PI / 180) * radiusToCenter.number;
+		smallSphereRadius.number_SciPow = radiusToCenter.number_SciPow;
+		CommonData::FixSciNumber(&smallSphereRadius);
+		posY.number = sin(periodToAngle) * smallSphereRadius.number;
+		posY.number_SciPow = smallSphereRadius.number_SciPow;
+		CommonData::FixSciNumber(&posY);
+
+
+		//If we cast the orbit to the ZY plane we obtain a line
+		SciNumber lineMaxRange;
+		lineMaxRange.number = sin(periodToAngle) * radiusToCenter.number;
+		lineMaxRange.number_SciPow = radiusToCenter.number_SciPow;
+		CommonData::FixSciNumber(&lineMaxRange);
+		posZ.number = sin(orbitInclination * PI / 180) * lineMaxRange.number;
+		posZ.number_SciPow = lineMaxRange.number_SciPow;
+		CommonData::FixSciNumber(&posZ);
+
+
+	}
 }
 
 void Planet::CalculateSatelitesPositions(long time)
@@ -69,7 +104,7 @@ void Planet::AddSatelite(Satelite* satelite)
 std::string Planet::toString()
 {
 	std::string res = "Name:\t" + name + "\n";
-	res += "Position:\t" + std::to_string(posX.number) + "*10^" + std::to_string(posX.number_SciPow) + "\t" + std::to_string(posY.number) + "*10^" + std::to_string(posY.number_SciPow) + "\n";
+	res += "Position:\t" + std::to_string(posX.number) + "*10^" + std::to_string(posX.number_SciPow) + "\t" + std::to_string(posY.number) + "*10^" + std::to_string(posY.number_SciPow) + "\t" + std::to_string(posZ.number) + "*10^" + std::to_string(posZ.number_SciPow) + "\n";
 	res += "Radius:\t" + std::to_string(radius.number) + "*10^" + std::to_string(radius.number_SciPow) + "\n";
 	res += "Orbit Radius:\t" + std::to_string(radiusToCenter.number) + "*10^" + std::to_string(radiusToCenter.number_SciPow) + "\n";
 	return res;

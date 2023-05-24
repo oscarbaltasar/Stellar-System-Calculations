@@ -64,3 +64,35 @@ SciNumber CommonData::AddSciNumber(SciNumber a, SciNumber b)
 	FixSciNumber(&res);
 	return res;
 }
+
+void CommonData::CalculatePositionOnSphere(long latitude, long longitude, SciNumber *sphereRadius, bool latitudeHemisphere, int longitudeQuadrant, SciNumber* posX, SciNumber* posY, SciNumber* posZ)
+{
+	//Calculate positions as if in quadrant 0, upper hemisphere
+	posX->number = sphereRadius->number * sin(latitude * (PI / 180)) * cos(longitude * (PI / 180));
+	posX->number_SciPow = sphereRadius->number_SciPow;
+	CommonData::FixSciNumber(posX);
+	posY->number = sphereRadius->number * sin(latitude * (PI / 180)) * sin(longitude * (PI / 180));
+	posY->number_SciPow = sphereRadius->number_SciPow;
+	CommonData::FixSciNumber(posY);
+	posZ->number = sphereRadius->number * cos(latitude * (PI / 180));
+	posZ->number_SciPow = sphereRadius->number_SciPow;
+	CommonData::FixSciNumber(posZ);
+
+	//Fix to real values assuming the first meridian is looking away from center at x = max, y = 0
+	if (!latitudeHemisphere) posZ->number *= -1;
+
+	switch (longitudeQuadrant) {
+	case 0:
+		break;
+	case 1:
+		posX->number *= -1;
+		break;
+	case 2:
+		posX->number *= -1;
+		posY->number *= -1;
+		break;
+	case 3:
+		posY->number *= -1;
+		break;
+	}
+}

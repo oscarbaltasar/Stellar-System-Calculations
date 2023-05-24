@@ -1,6 +1,6 @@
 #include "User.h"
 
-User::User(double longitude, double latitude, double height, Planet* planet)
+User::User(long longitude, long latitude, double height, Planet* planet)
 {
 	posXrelative.number = 0;
 	posXrelative.number_SciPow = 0;
@@ -50,6 +50,9 @@ void User::calculateRelativePosition()
 	}
 	if (mirrorUserQuadrant) quadrantUserisIn = 3 - quadrantUserisIn;
 
+	CommonData::CalculatePositionOnSphere(sphereLatitude, sphereLongitude, &sphereRadius, userIsInUpperHemisphere, quadrantUserisIn, &posXrelative, &posYrelative, &posZrelative);
+
+	/*
 	//Calculate positions as if in quadrant 0, upper hemisphere
 	posXrelative.number = sphereRadius.number * sin(sphereLatitude * (PI / 180)) * cos(sphereLongitude * (PI / 180));
 	posXrelative.number_SciPow = sphereRadius.number_SciPow;
@@ -78,6 +81,7 @@ void User::calculateRelativePosition()
 		posYrelative.number *= -1;
 		break;
 	}
+	*/
 }
 
 //TODO: calcular con posición Z de los planetas

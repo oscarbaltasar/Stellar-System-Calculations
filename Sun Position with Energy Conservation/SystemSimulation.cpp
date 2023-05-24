@@ -10,7 +10,7 @@ SystemSimulation::SystemSimulation(Planet* planets, SystemCenter* systemCenter, 
 
 void SystemSimulation::run()
 {
-	long DebugTime = 100000;
+	long DebugTime = 100000000;
 	while (true) {
 		
 		//get reallife time

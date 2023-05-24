@@ -6,11 +6,11 @@ private:
 	Planet* planet = nullptr;
 	SciNumber posXrelative, posYrelative, posZrelative;
 	SciNumber posX, posY, posZ;
-	double longitude, latitude;
+	long longitude, latitude;
 	SciNumber height;
 
 public:
-	User(double longitude, double latitude, double height, Planet* planet);
+	User(long longitude, long latitude, double height, Planet* planet);
 	void calculateRelativePosition();
 	void CalculateGlobalPosition();
 	std::string toString();

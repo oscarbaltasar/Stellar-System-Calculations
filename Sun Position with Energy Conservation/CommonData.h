@@ -19,7 +19,7 @@
 
 #define PI 3.14159265358979323846
 
-#define EarthPeriod 365.256
+#define EarthPeriod 31558118.4
 #define SecondsinDay 86400
 #define EarthInclination 23.44
 
@@ -50,6 +50,7 @@ public:
 	static inline tm* realTime;
 	static void FixSciNumber(SciNumber *number);
 	static SciNumber AddSciNumber(SciNumber a, SciNumber b);
+	static void CalculatePositionOnSphere(long latitude, long longitude, SciNumber *sphereRadius, bool latitudeHemisphere, int longitudeQuadrant, SciNumber *posX, SciNumber *posY, SciNumber *posZ);	//Given latitude and longitude calculate positions
 
 private:
 	time_t rawTime;
