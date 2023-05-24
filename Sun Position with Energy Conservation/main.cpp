@@ -3,8 +3,8 @@
 
 int main(int argc, char** argv) {
 	std::cout << "Iniciando valores\n";
-	Satelite* moon = new Satelite("moon",3.844, 6, 1.7374, 3, 5.14, 6.68, 2358720,9999999999999,9999999999999);
-	Planet* earth = new Planet("earth",1.496, 8, 6.378, 3, 8, 23.44, 31558118.4, 9999999999999999999,0, 14860800,0);
+	Satelite* moon = new Satelite("moon",3.844, 6, 1.7374, 3, 5.14, 6.68, 2358720, 2358720,0,0,0);
+	Planet* earth = new Planet("earth",1.496, 8, 6.378, 3, 8, 23.44, 31558118.4, 86400,0, 14860800,0);
 	earth->AddSatelite(moon);
 	SystemCenter sun = SystemCenter(0, 0);
 	User* user = new User(-4.064501728800064, 40.71010524106721, 1.091, earth);

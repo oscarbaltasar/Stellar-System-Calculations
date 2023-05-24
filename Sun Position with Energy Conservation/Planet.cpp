@@ -19,6 +19,7 @@ Planet::Planet(std::string name, double radiusToCenter, int radiusToCenter_SciPo
 	this->axisInclination = axisInclination;
 	this->upperSolstice = upperSolstice;
 	this->orbitPeriod = period;
+	this->axisPeriod = axisPeriod;
 	this->orbitInclinationNodePosition = orbitInclinationNodePosition;
 	this->initialperiodPosition = initialperiodPosition;
 }
@@ -31,44 +32,31 @@ void Planet::CalculateGlobalPosition(float time)
 	float currentPeriodPosition = ((int)(time + initialperiodPosition) % (int)orbitPeriod) / orbitPeriod;
 	float periodToAngle = currentPeriodPosition * (2 * PI);
 	if (orbitInclination == 0) { //If no inclination, calculate as simple circle
-
-		posX.number = cos(periodToAngle) * radiusToCenter.number;
-		posX.number_SciPow = radiusToCenter.number_SciPow;
-		CommonData::FixSciNumber(&posX);
-
-		posY.number = sin(periodToAngle) * radiusToCenter.number;
-		posY.number_SciPow = radiusToCenter.number_SciPow;
-		CommonData::FixSciNumber(&posY);
+		posX = CommonData::MultiplySciNumber(radiusToCenter, cos(periodToAngle));
+		posY = CommonData::MultiplySciNumber(radiusToCenter, sin(periodToAngle));
 	}
 	else {						//If inclinated, calculate as an ellipse and a line
 		//TODO: asuming inclination nodes are: 0 and it's oposite
 		
 		//if we cast the orbit to the plane XY we obtain an ellipse
 		//BiggerSphere
-		posX.number = cos(periodToAngle) * radiusToCenter.number;
-		posX.number_SciPow = radiusToCenter.number_SciPow;
-		CommonData::FixSciNumber(&posX);
+		posX = CommonData::MultiplySciNumber(radiusToCenter, cos(periodToAngle));
 		//SmallerSphere
 		SciNumber smallSphereRadius;
-		smallSphereRadius.number = cos(orbitInclination * PI / 180) * radiusToCenter.number;
-		smallSphereRadius.number_SciPow = radiusToCenter.number_SciPow;
-		CommonData::FixSciNumber(&smallSphereRadius);
-		posY.number = sin(periodToAngle) * smallSphereRadius.number;
-		posY.number_SciPow = smallSphereRadius.number_SciPow;
-		CommonData::FixSciNumber(&posY);
-
+		smallSphereRadius = CommonData::MultiplySciNumber(radiusToCenter, cos(orbitInclination * PI / 180));
+		posY = CommonData::MultiplySciNumber(smallSphereRadius, sin(periodToAngle));
 
 		//If we cast the orbit to the ZY plane we obtain a line
 		SciNumber lineMaxRange;
-		lineMaxRange.number = sin(periodToAngle) * radiusToCenter.number;
-		lineMaxRange.number_SciPow = radiusToCenter.number_SciPow;
-		CommonData::FixSciNumber(&lineMaxRange);
-		posZ.number = sin(orbitInclination * PI / 180) * lineMaxRange.number;
-		posZ.number_SciPow = lineMaxRange.number_SciPow;
-		CommonData::FixSciNumber(&posZ);
-
-
+		lineMaxRange = CommonData::MultiplySciNumber(radiusToCenter, sin(periodToAngle));
+		posZ = CommonData::MultiplySciNumber(lineMaxRange, sin(orbitInclination * PI / 180));
 	}
+}
+
+void Planet::CalculateCurrentAxisRotation(float time)
+{
+	if (axisPeriod == 0) { currentAxisRotation = 0; return; }
+	currentAxisRotation = ((int)time % (int)axisPeriod)/axisPeriod;
 }
 
 void Planet::CalculateSatelitesPositions(float time)
@@ -78,7 +66,8 @@ void Planet::CalculateSatelitesPositions(float time)
 	int numberofSatelites = sizeof(**satelites) / sizeof(Satelite);
 	for (int i = 0; i < numberofSatelites; i++) {
 		(*satelites)[i].CalculateRelativePosition(time);
-		(*satelites)[i].CalculateGlobalPosition(posX, posY);
+		(*satelites)[i].CalculateGlobalPosition(posX, posY, posZ);
+		(*satelites)[i].CalculateCurrentAxisRotation(time);
 		std::cout << (*satelites)[i].toString();
 	}
 }
@@ -120,7 +109,24 @@ SciNumber Planet::getPosY()
 	return posY;
 }
 
+SciNumber Planet::getPosZ()
+{
+	return posZ;
+}
+
 SciNumber Planet::getRadius()
 {
 	return radius;
+}
+
+//Range = (0 - 360) degrees
+float Planet::getAxisInclination()
+{
+	return axisInclination;
+}
+
+//Range = (0 - 1) %
+float Planet::getCurrentAxisRotation()
+{
+	return currentAxisRotation;
 }

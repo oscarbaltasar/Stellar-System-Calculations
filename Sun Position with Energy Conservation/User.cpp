@@ -50,38 +50,33 @@ void User::calculateRelativePosition()
 	}
 	if (mirrorUserQuadrant) quadrantUserisIn = 3 - quadrantUserisIn;
 
+	//Calculate positions assuming planet isn't inclined and it's the moment 0 of the day
 	CommonData::CalculatePositionOnSphere(sphereLatitude, sphereLongitude, &sphereRadius, userIsInUpperHemisphere, quadrantUserisIn, &posXrelative, &posYrelative, &posZrelative);
 
-	/*
-	//Calculate positions as if in quadrant 0, upper hemisphere
-	posXrelative.number = sphereRadius.number * sin(sphereLatitude * (PI / 180)) * cos(sphereLongitude * (PI / 180));
-	posXrelative.number_SciPow = sphereRadius.number_SciPow;
-	CommonData::FixSciNumber(&posXrelative);
-	posYrelative.number = sphereRadius.number * sin(sphereLatitude * (PI / 180)) * sin(sphereLongitude * (PI / 180));
-	posYrelative.number_SciPow = sphereRadius.number_SciPow;
-	CommonData::FixSciNumber(&posYrelative);
-	posZrelative.number = sphereRadius.number * cos(sphereLatitude * (PI / 180));
-	posZrelative.number_SciPow = sphereRadius.number_SciPow;
-	CommonData::FixSciNumber(&posZrelative);
+	//Add rotation from axis rotation via Rodrigues: N = (0, 0, 1)
+	SciNumber normalX, normalY, normalZ;
+	normalX.number = 0;
+	normalX.number_SciPow = posXrelative.number_SciPow;
+	normalY.number = 0;
+	normalY.number_SciPow = posYrelative.number_SciPow;
+	normalZ.number = 1;
+	normalZ.number_SciPow = posZrelative.number_SciPow;
+	float axisRotation = planet->getCurrentAxisRotation() * 2 * PI;
+	CommonData::RotatePositionOnSphereViaRodrigues(axisRotation, posXrelative, posYrelative, posZrelative, normalX, normalY, normalZ, &posXrelative, &posYrelative, &posZrelative);
+	
+	//Add rotation from axis inclination via Rodrigues: N = (0, 1, 0)
+	normalX.number = 0;
+	normalX.number_SciPow = posXrelative.number_SciPow;
+	normalY.number = 1;
+	normalY.number_SciPow = posYrelative.number_SciPow;
+	normalZ.number = 0;
+	normalZ.number_SciPow = posZrelative.number_SciPow;
+	float axisInclination = planet->getAxisInclination() * PI / 180;
+	CommonData::RotatePositionOnSphereViaRodrigues(axisInclination, posXrelative, posYrelative, posZrelative, normalX, normalY, normalZ, &posXrelative, &posYrelative, &posZrelative);
 
-	//Fix to real values assuming the first meridian is looking away from center at x = max, y = 0
-	if (!userIsInUpperHemisphere) posZrelative.number *= -1;
 
-	switch (quadrantUserisIn) {
-	case 0:
-		break;
-	case 1:
-		posXrelative.number *= -1;
-		break;
-	case 2:
-		posXrelative.number *= -1;
-		posYrelative.number *= -1;
-		break;
-	case 3:
-		posYrelative.number *= -1;
-		break;
-	}
-	*/
+
+
 }
 
 //TODO: calcular con posición Z de los planetas
@@ -90,7 +85,7 @@ void User::CalculateGlobalPosition()
 {
 	posX = CommonData::AddSciNumber(posXrelative, planet->getPosX());
 	posY = CommonData::AddSciNumber(posYrelative, planet->getPosY());
-	posZ = posZrelative;
+	posZ = CommonData::AddSciNumber(posZrelative, planet->getPosZ());
 }
 
 std::string User::toString()
