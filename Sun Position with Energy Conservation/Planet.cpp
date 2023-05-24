@@ -56,7 +56,9 @@ void Planet::CalculateGlobalPosition(float time)
 void Planet::CalculateCurrentAxisRotation(float time)
 {
 	if (axisPeriod == 0) { currentAxisRotation = 0; return; }
-	currentAxisRotation = ((int)time % (int)axisPeriod)/axisPeriod;
+	//(current day progress + current orbit progress) % 1
+	currentAxisRotation = (((int)time % (int)axisPeriod) / axisPeriod + ((int)(time + initialperiodPosition) % (int)orbitPeriod) / orbitPeriod);
+	if (currentAxisRotation > 1) currentAxisRotation -= 1;
 }
 
 void Planet::CalculateSatelitesPositions(float time)

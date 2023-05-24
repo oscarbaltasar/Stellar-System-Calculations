@@ -64,7 +64,8 @@ void Satelite::CalculateGlobalPosition(SciNumber posXPlanet, SciNumber posYPlane
 void Satelite::CalculateCurrentAxisRotation(float time)
 {
 	if (axisPeriod == 0) { currentAxisRotation = 0; return; }
-	currentAxisRotation = ((int)time % (int)axisPeriod) / axisPeriod;
+	currentAxisRotation = (((int)time % (int)axisPeriod) / axisPeriod + ((int)(time + initialperiodPosition) % (int)orbitPeriod) / orbitPeriod);
+	if (currentAxisRotation > 1) currentAxisRotation -= 1;
 }
 
 std::string Satelite::toString()
