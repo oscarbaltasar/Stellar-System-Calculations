@@ -1,5 +1,4 @@
 #pragma once
-#define _CRT_SECURE_NO_WARNINGS
 #include <string.h>
 #include <string>
 #include <string_view>
@@ -48,8 +47,10 @@ public:
 	~CommonData();
 	void updateTime();
 	static inline tm* realTime;
+	static inline int lowestExponent;
 	static void FixSciNumber(SciNumber *number);
 	static SciNumber AddSciNumber(SciNumber a, SciNumber b);
+	static SciNumber AddSciNumber(SciNumber a, float b);
 	static SciNumber MinusSciNumber(SciNumber a, SciNumber b);
 	static SciNumber MultiplySciNumber(SciNumber a, SciNumber b);
 	static SciNumber MultiplySciNumber(SciNumber a, float b);

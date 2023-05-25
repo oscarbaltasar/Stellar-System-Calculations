@@ -82,3 +82,36 @@ SciNumber Satelite::getRadius()
 {
 	return radius;
 }
+
+//Range = (0 - 360) degrees
+float Satelite::getAxisInclination()
+{
+	return axisInclination;
+}
+
+//Range = (0 - 1) %
+float Satelite::getCurrentAxisRotation()
+{
+	return currentAxisRotation;
+}
+
+void Satelite::CalculateScaledPositions(float* posX, float* posY, float* posZ)
+{
+	int posXexponent = this->posX.number_SciPow - CommonData::lowestExponent;
+	*posX = (float)(this->posX.number * pow(10, posXexponent));
+
+	int posYexponent = this->posY.number_SciPow - CommonData::lowestExponent;
+	*posY = (float)(this->posY.number * pow(10, posYexponent));
+
+	int posZexponent = this->posZ.number_SciPow - CommonData::lowestExponent;
+	*posZ = (float)(this->posZ.number * pow(10, posZexponent));
+}
+
+double Satelite::CalculateScaledRadius()
+{
+	int resExponent = this->radius.number_SciPow - CommonData::lowestExponent;
+	std::cout << "Satelite realer Scale: " + std::to_string(this->radius.number) + "*10^" + std::to_string(this->radius.number_SciPow - CommonData::lowestExponent) + "\n";
+	double res = this->radius.number * pow(10, resExponent);
+	std::cout << "Satelite real Scale: " + std::to_string(res) + "\n";
+	return res;
+}

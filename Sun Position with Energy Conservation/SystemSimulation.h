@@ -20,6 +20,5 @@ private:
 
 public:
 	SystemSimulation(Planet* planets, SystemCenter* systemCenter, User* user);
-
 	void run();
 };

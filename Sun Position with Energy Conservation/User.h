@@ -14,4 +14,8 @@ public:
 	void calculateRelativePosition();
 	void CalculateGlobalPosition();
 	std::string toString();
+
+	void CalculateScaledPositions(float* posX, float* posY, float* posZ);
+	void addLongitude(float longitude);
+	void addLatitude(float latitude);
 };

@@ -26,4 +26,9 @@ public:
 	void CalculateCurrentAxisRotation(float time);
 	std::string toString();
 	SciNumber getRadius();
+	float getAxisInclination();
+	float getCurrentAxisRotation();
+
+	void CalculateScaledPositions(float* posX, float* posY, float* posZ);
+	double CalculateScaledRadius();
 };

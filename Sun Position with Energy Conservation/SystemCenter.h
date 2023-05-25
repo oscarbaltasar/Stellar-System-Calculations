@@ -3,9 +3,9 @@
 
 class SystemCenter {
 private:
-	Sun sun;
+	Sun* sun;
 	double posX, posY;
 
 public:
-	SystemCenter(double posX, double posY);
+	SystemCenter(double posX, double posY, Sun* sun);
 };

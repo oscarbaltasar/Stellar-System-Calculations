@@ -11,13 +11,12 @@ SystemSimulation::SystemSimulation(Planet* planets, SystemCenter* systemCenter, 
 void SystemSimulation::run()
 {
 
-	while (true) {
 		
 		//get reallife time
 		auto start = std::chrono::high_resolution_clock::now();
 		int lastSecond = realTime->tm_sec;
 		this->UpdateRealTime();
-		if (lastSecond == realTime->tm_sec) continue; //only once each second
+		//if (lastSecond == realTime->tm_sec) return; //only once each second
 		float realTimeinSeconds = realTime->tm_sec + realTime->tm_min * 60 + realTime->tm_hour * 3600 + realTime->tm_yday * 86400;
 		//realTimeinSeconds = 15779059;
 		//realTimeinSeconds = 7889529.5;
@@ -38,7 +37,7 @@ void SystemSimulation::run()
 			
 		}
 		std::cout << "\n\n\n";
-	}
+
 }
 
 void SystemSimulation::UpdateRealTime() {

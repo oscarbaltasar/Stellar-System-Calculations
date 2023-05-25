@@ -27,31 +27,13 @@ void User::calculateRelativePosition()
 
 	SciNumber sphereRadius = CommonData::AddSciNumber(height, planet->getRadius());
 	float sphereLatitude = latitude;
+	sphereLatitude -= 90;
+	sphereLatitude *= -1;
 	float sphereLongitude = longitude;
-
-	//Calculate in which hemisphere the user is and it's latitude
-	bool userIsInUpperHemisphere = true;
-	if (latitude < 0) {
-		sphereLatitude *= -1;
-		userIsInUpperHemisphere = false;
-	}
-	sphereLatitude = 90 - sphereLatitude;
-
-	//Calculate in which quadrant the user is (0-3, counter clockwise) and it's longitude
-	int quadrantUserisIn = 0; 
-	bool mirrorUserQuadrant = false;
-	if (longitude < 0) {
-		sphereLongitude *= -1;
-		mirrorUserQuadrant = true;
-	}
-	if (sphereLongitude > 90) {
-		quadrantUserisIn = 1;
-		sphereLongitude -= 90;
-	}
-	if (mirrorUserQuadrant) quadrantUserisIn = 3 - quadrantUserisIn;
+	
 
 	//Calculate positions assuming planet isn't inclined and it's the moment 0 of the day
-	CommonData::CalculatePositionOnSphere(sphereLatitude, sphereLongitude, &sphereRadius, userIsInUpperHemisphere, quadrantUserisIn, &posXrelative, &posYrelative, &posZrelative);
+	CommonData::CalculatePositionOnSphere(sphereLatitude, sphereLongitude, &sphereRadius, 1, -1, &posXrelative, &posYrelative, &posZrelative);
 
 	//Add rotation from axis rotation via Rodrigues: N = (0, 0, 1)
 	SciNumber normalX, normalY, normalZ;
@@ -62,7 +44,7 @@ void User::calculateRelativePosition()
 	normalZ.number = 1;
 	normalZ.number_SciPow = posZrelative.number_SciPow;
 	float axisRotation = planet->getCurrentAxisRotation() * 2 * PI;
-	CommonData::RotatePositionOnSphereViaRodrigues(axisRotation, posXrelative, posYrelative, posZrelative, normalX, normalY, normalZ, &posXrelative, &posYrelative, &posZrelative);
+	//CommonData::RotatePositionOnSphereViaRodrigues(axisRotation, posXrelative, posYrelative, posZrelative, normalX, normalY, normalZ, &posXrelative, &posYrelative, &posZrelative);
 	
 	//Add rotation from axis inclination via Rodrigues: N = (0, 1, 0)
 	normalX.number = 0;
@@ -93,5 +75,32 @@ std::string User::toString()
 	std::string res = "User:\n";
 	res += "Relative Position:\t" + std::to_string(posXrelative.number) + "*10^" + std::to_string(posXrelative.number_SciPow) + "\t" + std::to_string(posYrelative.number) + "*10^" + std::to_string(posYrelative.number_SciPow) + "\t" + std::to_string(posZrelative.number) + "*10^" + std::to_string(posZrelative.number_SciPow) + + "\n";
 	res += "Global Position:\t" + std::to_string(posX.number) + "*10^" + std::to_string(posX.number_SciPow) + "\t" + std::to_string(posY.number) + "*10^" + std::to_string(posY.number_SciPow) + "\t" + std::to_string(posZ.number) + "*10^" + std::to_string(posZ.number_SciPow) + "\n";
+	res += "Longitude and Latitude:\t" + std::to_string(longitude) + "\t" + std::to_string(latitude) + "\n";
 	return res;
+}
+
+void User::CalculateScaledPositions(float* posX, float* posY, float* posZ)
+{
+	int posXexponent = this->posX.number_SciPow - CommonData::lowestExponent;
+	*posX = (float)(this->posX.number * pow(10, posXexponent));
+
+	int posYexponent = this->posY.number_SciPow - CommonData::lowestExponent;
+	*posY = (float)(this->posY.number * pow(10, posYexponent));
+
+	int posZexponent = this->posZ.number_SciPow - CommonData::lowestExponent;
+	*posZ = (float)(this->posZ.number * pow(10, posZexponent));
+}
+
+void User::addLongitude(float longitude)
+{
+	this->longitude += longitude;
+	if (this->longitude > 180) this->longitude -= 360;
+	if (this->longitude < -180) this->longitude += 360;
+}
+
+void User::addLatitude(float latitude)
+{
+	this->latitude += latitude;
+	if (this->latitude > 90) this->latitude = 90;
+	if (this->latitude < -90) this->latitude = -90;
 }

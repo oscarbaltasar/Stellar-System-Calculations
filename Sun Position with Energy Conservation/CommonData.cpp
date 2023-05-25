@@ -17,6 +17,7 @@ void CommonData::updateTime()
 
 void CommonData::FixSciNumber(SciNumber *number)
 {
+	
 	//std::cout << "Number: " + std::to_string(number->number) + "*10^" + std::to_string(number->number_SciPow);
 	if (number->number == 0) {
 		number->number_SciPow = 0;
@@ -37,6 +38,8 @@ void CommonData::FixSciNumber(SciNumber *number)
 	}
 	if (isNegative)
 		number->number *= -1;
+	//if (lowestExponent == NULL || lowestExponent < number->number_SciPow) lowestExponent = number->number_SciPow;
+	lowestExponent = 5;
 }
 
 SciNumber CommonData::AddSciNumber(SciNumber a, SciNumber b)
@@ -59,6 +62,36 @@ SciNumber CommonData::AddSciNumber(SciNumber a, SciNumber b)
 		int SciPowRest = b.number_SciPow - a.number_SciPow;
 		b.number *= pow(10, SciPowRest);
 		res.number = a.number + b.number;
+		res.number_SciPow = a.number_SciPow;
+	}
+	FixSciNumber(&res);
+	return res;
+}
+
+SciNumber CommonData::AddSciNumber(SciNumber a, float b)
+{
+	SciNumber res = SciNumber();
+	res.number = 0;
+	res.number_SciPow = 0;
+	SciNumber baux = SciNumber();
+	baux.number = b;
+	baux.number_SciPow = 0;
+	FixSciNumber(&baux);
+	if (a.number_SciPow == baux.number_SciPow) {
+		res.number = a.number + baux.number;
+		res.number_SciPow = a.number_SciPow;
+
+	}
+	if (a.number_SciPow > baux.number_SciPow) {
+		int SciPowRest = a.number_SciPow - baux.number_SciPow;
+		a.number *= pow(10, SciPowRest);
+		res.number = a.number + baux.number;
+		res.number_SciPow = baux.number_SciPow;
+	}
+	if (baux.number_SciPow > a.number_SciPow) {
+		int SciPowRest = baux.number_SciPow - a.number_SciPow;
+		baux.number *= pow(10, SciPowRest);
+		res.number = a.number + baux.number;
 		res.number_SciPow = a.number_SciPow;
 	}
 	FixSciNumber(&res);
@@ -136,8 +169,6 @@ void CommonData::CalculatePositionOnSphere(float latitude, float longitude, SciN
 	*posY = MultiplySciNumber(*sphereRadius, sin(latitude * (PI / 180)) * sin(longitude * (PI / 180)));
 	*posZ = MultiplySciNumber(*sphereRadius, cos(latitude * (PI / 180)));
 	//Fix to real values assuming the first meridian is looking away from center at x = max, y = 0
-	if (!latitudeHemisphere) posZ->number *= -1;
-
 	switch (longitudeQuadrant) {
 	case 0:
 		break;
@@ -151,7 +182,10 @@ void CommonData::CalculatePositionOnSphere(float latitude, float longitude, SciN
 	case 3:
 		posY->number *= -1;
 		break;
+	default:
+		return;
 	}
+	if (!latitudeHemisphere) posZ->number *= -1;
 }
 
 void CommonData::RotatePositionOnSphereViaRodrigues(float angle, SciNumber vectorVx, SciNumber vectorVy, SciNumber vectorVz, SciNumber vectorKx, SciNumber vectorKy, SciNumber vectorKz, SciNumber* resultVx, SciNumber* resultVy, SciNumber* resultVz)
