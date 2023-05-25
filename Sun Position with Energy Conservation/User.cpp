@@ -54,7 +54,7 @@ void User::calculateRelativePosition()
 	normalZ.number = 0;
 	normalZ.number_SciPow = posZrelative.number_SciPow;
 	float axisInclination = planet->getAxisInclination() * PI / 180;
-	CommonData::RotatePositionOnSphereViaRodrigues(axisInclination, posXrelative, posYrelative, posZrelative, normalX, normalY, normalZ, &posXrelative, &posYrelative, &posZrelative);
+	//CommonData::RotatePositionOnSphereViaRodrigues(axisInclination, posXrelative, posYrelative, posZrelative, normalX, normalY, normalZ, &posXrelative, &posYrelative, &posZrelative);
 
 
 

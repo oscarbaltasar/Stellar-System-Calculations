@@ -6,21 +6,21 @@ void CameraUser::step()
 	user->CalculateScaledPositions(&this->position.x, &this->position.y, &this->position.z);
 	if (InputManager::keys['F'])
 	{
-		user->addLatitude(-0.1f);
+		user->addLatitude(-1.f);
 	}
 
 	if (InputManager::keys['H'])
 	{
-		user->addLatitude(0.1f);
+		user->addLatitude(1.f);
 	}
 	if (InputManager::keys['T'])
 	{
-		user->addLongitude(0.1f);
+		user->addLongitude(1.f);
 	}
 
 	if (InputManager::keys['G'])
 	{
-		user->addLongitude(-0.1f);
+		user->addLongitude(-1.f);
 	}
 	if (InputManager::keys['D'])
 	{
